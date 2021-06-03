@@ -70,6 +70,16 @@ RUN cd /tmp && \
     make install && \
     rm -rf /tmp/*
 
+# Install git LFS
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ${build_deps} ca-certificates && \
+    curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends git-lfs && \
+    git lfs install && \
+    apt-get autoremove -y && \
+    rm -r /var/lib/apt/lists/* && \
+    apt-get clean
+
 RUN mkdir -p /home/runner ${AGENT_TOOLSDIRECTORY}
 
 WORKDIR /home/runner

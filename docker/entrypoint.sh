@@ -53,14 +53,25 @@ else
         echo "Exchanging the GitHub Access Token with a Runner Token (scope: ${SCOPE})..."
 
         _PROTO="$(echo "${RUNNER_URL}" | grep :// | sed -e's,^\(.*://\).*,\1,g')"
+        echo ${_PROTO}
         _URL="$(echo "${RUNNER_URL/${_PROTO}/}")"
+        echo ${_URL}
         _PATH="$(echo "${_URL}" | grep / | cut -d/ -f2-)"
+        echo ${_PATH}
+        _FULLPATH="https://api.github.com/${SCOPE}/${_PATH}/actions/runners/registration-token"
+        echo ${_FULLPATH}
 
-        RUNNER_TOKEN="$(curl -XPOST -fsSL \
+        RUNNER_TOKEN="$(curl -XPOST \
             -H "Authorization: token ${GITHUB_ACCESS_TOKEN}" \
             -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/${SCOPE}/${_PATH}/actions/runners/registration-token" \
+            -s "${_FULLPATH}" \
             | jq -r '.token')"
+
+        if [[ -z $RUNNER_TOKEN ]]; then
+            echo "Got empty RUNNER_TOKEN abort!"
+            exit -1
+        fi
+
     fi
 
     ./config.sh \
