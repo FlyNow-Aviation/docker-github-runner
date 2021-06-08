@@ -5,6 +5,8 @@ services:
       image: flynow/github_runner
       build:
         context: docker
+      restart: always
+      network_mode: host
       environment:
         RUNNER_NAME: ${RUNNER_NAME}
         RUNNER_REPOSITORY_URL: ${RUNNER_REPOSITORY_URL}
